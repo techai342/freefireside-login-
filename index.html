@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech AI | Secure Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000;
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        /* Optimized Fire Animation Container */
+        .fire-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .fire {
+            position: absolute;
+            bottom: -100px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            height: 8px;
+            background: #ff5722;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #ff5722, 0 0 10px #ff5722;
+            animation: rise linear infinite;
+            will-change: transform, opacity;
+        }
+        
+        @keyframes rise {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--tx)) scale(var(--s));
+                opacity: 0;
+            }
+        }
+        
+        /* Header Styling */
+        .header {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            width: 100%;
+            padding: 0 15px;
+        }
+        
+        .header h1 {
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(255, 87, 34, 0.8);
+            margin-bottom: 8px;
+        }
+        
+        .header h1 span.tech {
+            color: #4fc3f7;
+        }
+        
+        .header h1 span.ai {
+            color: #ff5252;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Login Form Styling */
+        .login-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 0 25px rgba(255, 87, 34, 0.6);
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 87, 34, 0.4);
+            margin-top: 30px;
+        }
+        
+        .login-container h2 {
+            color: #ff5722;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.7);
+            font-size: 1.4rem;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            border: 1px solid rgba(255, 87, 34, 0.4);
+            transition: all 0.3s ease;
+            font-size: 15px;
+            padding-left: 40px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            bottom: 13px;
+            color: #ff5722;
+            font-size: 16px;
+        }
+        
+        .input-group input:focus {
+            border-color: #ff5722;
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        /* iOS Style Button */
+        .ios-btn {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #ff5722, #ff9800);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+            margin-top: 8px;
+        }
+        
+        .ios-btn span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .ios-btn:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            border-radius: 50px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .ios-btn:hover:after {
+            opacity: 1;
+        }
+        
+        .ios-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(255, 87, 34, 0.6);
+        }
+        
+        .ios-btn i {
+            margin-left: 8px;
+            font-size: 15px;
+        }
+        
+        .error-message {
+            color: #ff5252;
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+            background: rgba(255, 82, 82, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .success-message {
+            color: #4caf50;
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .footer {
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+        }
+        
+        /* Media Queries for Mobile Optimization */
+        @media (max-height: 700px) {
+            .header {
+                position: relative;
+                top: 0;
+                margin-bottom: 15px;
+            }
+            
+            body {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 0.85rem;
+            }
+            
+            .login-container {
+                padding: 18px;
+            }
+            
+            .login-container h2 {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* Reduced motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .particle {
+                animation: none;
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fire Animation Background -->
+    <div class="fire-container">
+        <div class="fire" id="fire"></div>
+    </div>
+    
+    <!-- Header -->
+    <div class="header">
+        <h1><span class="tech">Tech</span>.<span class="ai">AI</span></h1>
+        <p>Secure next-generation authentication system</p>
+    </div>
+    
+    <!-- Login Form -->
+    <div class="login-container">
+        <h2>Member Login</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="ios-btn">
+                <span>Sign In</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i> Invalid username or password
+        </div>
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i> Login successful! Redirecting...
+        </div>
+        <div class="footer">
+            &copy; 2023 Tech.AI | Secure Authentication System
+        </div>
+    </div>
+
+    <script>
+        // Optimized fire animation for mobile
+        function createFire() {
+            const fireContainer = document.getElementById('fire');
+            // Reduced particle count for mobile devices
+            const particleCount = window.innerWidth < 768 ? 60 : 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties for each particle
+                const size = Math.random() * 10 + 4;
+                const posX = Math.random() * 100;
+                const duration = Math.random() * 4 + 3;
+                const delay = Math.random() * 4;
+                const tx = (Math.random() - 0.5) * 80;
+                const scale = Math.random() * 0.5 + 0.5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--s', scale);
+                
+                // Random color based on fire colors
+                const colorValue = Math.random();
+                if (colorValue < 0.6) {
+                    particle.style.background = '#ff5722';
+                    particle.style.boxShadow = '0 0 5px #ff5722, 0 0 10px #ff5722';
+                } else if (colorValue < 0.8) {
+                    particle.style.background = '#ff9800';
+                    particle.style.boxShadow = '0 0 5px #ff9800, 0 0 10px #ff9800';
+                } else {
+                    particle.style.background = '#ffeb3b';
+                    particle.style.boxShadow = '0 0 5px #ffeb3b, 0 0 10px #ffeb3b';
+                }
+                
+                fireContainer.appendChild(particle);
+            }
+        }
+        
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Check credentials
+            if (username === "Muhammad SAQIB" && password === "345678") {
+                // Correct credentials
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'block';
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = 'https://tech-ai-zeta.vercel.app/';
+                }, 1500);
+            } else {
+                // Incorrect credentials
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                
+                // Shake animation for error
+                document.querySelector('.login-container').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.querySelector('.login-container').style.animation = '';
+                }, 500);
+            }
+        });
+        
+        // Initialize fire animation after page load
+        window.addEventListener('load', function() {
+            // Check if user prefers reduced motion
+            const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            if (!mediaQuery || !mediaQuery.matches) {
+                createFire();
+            }
+        });
+        
+        // Add shake animation for errors
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+                20%, 40%, 60%, 80% { transform: translateX(8px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
